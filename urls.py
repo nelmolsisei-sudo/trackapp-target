@@ -67,7 +67,4 @@ urlpatterns = [
         name="load_qualifying_levels"),
 ]
 
-if settings.DEBUG:
-    urlpatterns += [
-        path('__debug__/', include('debug_toolbar.urls')),
-    ]
+# Debug toolbar removed - not installed in this environment
