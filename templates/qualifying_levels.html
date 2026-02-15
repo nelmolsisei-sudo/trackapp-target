@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+
+<h3 class="mt-3">Qualifying Levels</h3>
+
+<div class="mb-3">
+    <a href="{% url 'create_qualifying_level' %}" class="btn btn-primary">Create New Level</a>
+</div>
+
+<form method="GET">
+    <div class="row mb-3">
+        <div class="col-2">
+            {{form.event }}
+        </div>
+        <div class="col-2">
+            {{form.season }}
+        </div>
+        <div class="col-2">
+            {{form.gender }}
+        </div>
+        <div class="col-2">
+            <input type="submit" class="btn btn-secondary" value="Filter Results" />
+        </div>
+    </div>
+</form>
+<table class="table table-striped">
+    <tr>
+        <th>Description</th>
+        <th>Season</th>
+        <th>Event</th>
+        <th>Gender</th>
+        <th>Level</th>
+    </tr>
+    {% for ql in qualifying_levels %}
+        <tr>
+            <td>{{ ql.description }}</a></td>
+            <td>{{ ql.season.name }}</a></td>
+            <td>{{ ql.event.name }}</a></td>
+            <td>{{ ql.get_gender_display }}</a></td>
+            <td>{{ ql.formatted_value }}</a></td>
+        </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
+

@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<h3 class="mt-3">Edit Team</h3>
+
+Edit Team: <br/>
+<form method="POST" class="form">
+    {% csrf_token %}
+    {{form}}
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+{% endblock %}

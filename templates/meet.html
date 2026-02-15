@@ -1,0 +1,139 @@
+{% extends 'layout.html' %}
+{% load track_tags %}
+
+{% block body %}
+
+
+<h3 class="mt-3">{{meet.description}} on {{meet.date}}</h3>
+
+{% if request.user.is_superuser %}
+    <div class="float-right mb-3">
+        <a href="{% url 'merge_meet' meet.id %}" class="btn btn-primary btn-sm">Merge Meet</a>
+    </div>
+{% endif %}
+
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Personal Records</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            {{ new_prs }} personal records set.
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Athletes Competing</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            {{ athletes|length }} athletes competed {{ results.count }} times.
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-inffo text-uppercase mb-1">
+                            Qualifications</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            {{ qualifications }} Qualifications for Post Season
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<canvas id="myChart" width="100" height="25"></canvas>
+<script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: [{% for event, results in results_by_event.items %}'{{ event.name }}',{% endfor %}],
+        datasets: [{
+            label: '# of Results',
+            data: [{% for event, results in results_by_event.items %}'{{ results|length }}',{% endfor %}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            xAxes: [{maxBarThickness: 25}],
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+
+<row>
+{% for event, event_results in results_by_event.items %}
+    <h4>{{ event.name }}</h4>
+    <table class="table">
+        <th>Athlete</th>
+        <th>Result</th>
+        <th>Milestone</th>
+        <th>Qualifications</th>
+    
+        {% for result in event_results %}
+            <tr {% if result.personal_rank == 1 %}class="table-success"{% elif result.milestones %}class="table-info"{% endif %}>
+                <td>
+                    <a href="{% url 'profile' result.athlete.id %}"> {{result.athlete|clean_full_name:request }}</a>
+                </td>
+                <td>{{result.formatted_result}}</td>
+                <td>{{ result.milestones|default:'' }}</td>
+                <td>{% for ql in result.qualifications.all %}{{ ql.description }}<br/>{% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+{% endfor %}
+
+
+{% endblock %}
+

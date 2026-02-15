@@ -1,0 +1,114 @@
+{% extends 'layout.html' %}
+{% load track_tags %}
+
+{% block body %}
+
+
+<div class="px-4 py-5 my-3 text-center">
+    <h1 class="display-5 fw-bold">Welcome to Track Stats</h1>
+    <div class="col-lg-6 mx-auto">
+        <p class="lead mb-4">Click around and enjoy</p>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <a href="{% url 'meets' %}" class="btn btn-primary">View All Meets</a>
+            <a href="{% url 'user_list' %}" class="btn btn-primary">View All Athletes</a>
+        </div>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mt-3">
+            <b><i>You need an account to see everything. Ask an admin for access!</i></b>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <h4>Weekly Update</h4>
+        <div class="col-12 d-flex mb-3">
+            With the Regional Invitational and final regular-season Metro League meet wrapped up, let's take a rewind of the week's festivities. On the boys' side, there were huge performances across the board in both meets. As the coaches know (and remind us constantly), the competitive indoor season doesn't really start until January, and this week proved it. At the Metro League regular-season championship meet on Wednesday, 21 of the 40 male athletes who competed PR'd in their respective event. This included 4 of the 6 athletes competing in the 300m dash and the 1000m dash, as well as junior sprinter and jumper Marcus Rivera's breakout 7.27 seconds in the 55m dash. After a gut-wrenching meet, senior Derek Walsh sealed the win in the 2-mile, taking the 5 points against Eastwood's top runner in a time of 10:21.72. The 4x4 relay was simply icing on the cake. The women performed even better than the men in the PRs department, with 30 PRs out of the 42 athletes who competed in the meet. Sarah Chen PRd in both the 300m dash and the high jump with performances of 45.53 and 4'06", respectively, a massive step in the right direction for the young athlete. Additionally, last year's star pentathlete Emma Torres PR'd in the Long Jump in 14'11" to go along with her impressive 400 split of just 62 seconds. Sadly, the women lost to a very strong Eastwood team, falling just short of the Metro League regular-season title. They will be back with a vengeance on February 10th to claim the Metro League Championship.
+        </div>
+        <div class="col-12 d-flex mb-3">
+            Later in the week at the Regional Invitational, the boys and girls had yet another impressive showing, displaying growing improvement and momentum leading into the coveted state relay championship on Sunday, January 23. Ryan Mitchell capped off a strong week with two 55-second performances in the 400m, one in a relay, and one in the open 400. This came after his 1:30 600m performance on Wednesday. All eyes are on the junior mid-distance runner to see if his impressive progression will continue in such a promising direction. Alongside Mitchell, 17 boys milers took to the track on Friday, with 12 PRs including an impressive sub-5 performance from sophomore distance runner Liam Foster. On Saturday, the boys' 4x800 meter relay took down the school record with a meet-winning time of 7:57.82. The girls had similarly impressive performances during the three-day invitational as well. Maya Patel posted her first sub-3:10 1000m time of the season in 3:09.91 before coming back for a mixed relay on the final day of the invitational. Additionally, three women took advantage of the opportunity to try the triple jump during the indoor season, including Tasha Williams, Kayla Brooks, and Hannah Reed. All three of these athletes posted indoor PRs in the event.
+        </div>
+        <div class="col-12 d-flex mb-3">
+            With a long week of competition coming to an end, it's time to press the reset button for the team. With as much progress has been made in recent meets, there is still much work to be done before the State Relay competition on Sunday. Editors' Prediction? A win for the girls and the boys' teams. Another unanimous decision.
+        </div>
+        <div class="col-12 d-flex mb-3">
+            Editor Out.
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-5">
+            <h6 class="mt-3">Recent Meets</h6>
+
+            <table class="table table-striped">
+                <tr>
+                    <th>Meet</th>
+                    <th>Date</th>
+                </tr>
+                {% for meet in meets %}
+                <tr>
+                    <td>
+                        <a href="{% url 'meet' meet.id meet.description|slugify %}"> {{ meet.description }} ({{ meet.team.name }})</a>
+                    </td>
+                    <td>
+                        {{meet.date}}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="col">
+        </div>
+        <div class="col-5">
+            <h6 class="mt-4">Latest PRs</h6>
+
+            <table class="table table-striped">
+                <tr>
+                    <th>Athlete</th>
+                    <th>Event</th>
+                    <th>Result</th>
+                </tr>
+                {% for result in latest_prs %}
+                <tr>
+                    <td>
+                        <a href="{% url 'profile' result.athlete.id %}"> {{result.athlete|clean_full_name:request}}</a>
+                    </td>
+                    <td>
+                        {{result.event}}
+                    </td>
+                    <td>
+                        {{result.formatted_result}}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    
+    <div class="row">
+        <h4>Previous Updates</h4>
+        <div class="col-12 d-flex mb-1">
+            Week 1 of meets are in the book for the Riverside Track Team, with lots of exciting results to report! Between the meet hosted by our team at the high school,
+            the State Winter Festival and the State Speed Classic, the boys and girls teams combined for 241 PRs. You read that correctly. 241 PRs.
+            Staggering performances from everyone, especially for the season being in its infancy. On the boys side, Tyler Grant kicked off the season with a massive PR
+            in the mile, clocking a time of 5:38.33. This comes after a breakthrough cross country season for the runner, in which he continued his high school story of improving in leaps and bounds,
+            and eventually finished the season with a PR just short of 19 minutes over 5k. In addition to Tyler, Cole Ramirez also clocked a PR in his first mile of the season,
+            while Noah Bennett opened his 600m account for the year with a time of 1:37.66, PRing by over 6 seconds. On the women's side of things, Zara Thompson continued her astounding start to the season
+            clocking a PR of 9.29 in the 55m hurdles, qualifying for states along the way. This race comes after Thompson's dominating win in the prior week's State Winterfest meet. She said in a statement "I'm faster than Florence Griffith.
+            And you can't prove I'm not." Wise words, Zara, and who can argue with her with the way she's started the season? In other results, long jumper and sprinter Ava Martinez continues to impress,
+            competing in the State Winterfest and State Speed Classic and clocking an impressive time of 7.94 in the 55m. Incredible stuff from the women's already dominant young core of athletes. And an immeasurably promising start to
+            the season from both teams.
+        </div>
+        <div class="col-12 d-flex">
+            With the first Metro League meet approaching, let's take a preview of the Editor's Predictions here at Track Stats. After a quick poll consisting of 1 person talking out loud to himself, the results are in: Boys and Girls teams run away
+            with the meet (literally and figuratively). With the versatility and depth both rosters have, the editors here at Track Stats can't see anything other than dominant victories on both sides of the team happening.
+            "Too weak, too slow," as Wayne Gretzky would say. But we don't play hockey here. We run. So, "Start fast, finish faster," as someone I'm too lazy to Google would say. Enjoy the meet!
+            <br/></br>
+            Editor Out.
+        </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

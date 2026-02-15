@@ -1,0 +1,155 @@
+{% extends 'layout.html' %}
+{% load track_tags %}
+
+{% block body %}
+
+<h2 class="mt-3">{{ user|clean_full_name:request }}</h2>
+
+{% if request.user.is_superuser %}
+<div class="float-right mb-3">
+    <a href="{% url 'add_result' user.id %}" class="btn btn-primary btn-sm">Add Result</a>
+    <a href="{% url 'edit_profile' user.id %}" class="btn btn-primary btn-sm">Edit Profile</a>
+    <a href="{% url 'merge_athlete' user.id %}" class="btn btn-primary btn-sm">Merge Athlete</a>
+    <a href="{% url 'create_season_goal' user.id %}" class="btn btn-primary btn-sm">Add Season Goal</a>
+</div>
+{% endif %}
+
+<h3>Goals:</h3>
+<table class="table table-striped">
+    <th>Event</th>
+    <th>Meet</th>
+    <th>Season</th>
+    <th>Goal</th>
+    <th>Remove</th>
+
+    {% for goal in goals %}
+        <tr {% if result.is_pr %}class="table-success"{% endif %}>
+            <td>
+                <a href="{% url 'event' goal.event.id %}"> {{goal.event.name}}</a>
+            </td>
+            <td>
+                {% if goal.meet %}
+                    <a href="{% url 'meet' result.meet.id result.meet.description|slugify %}"> {{goal.meet.description}}</a>
+                {% endif %}
+            </td>
+            <td>
+                {% if goal.season %}
+                    {{ goal.season.name }}
+                {% endif %}
+            </td>
+            <td>{{ goal.value }}</td>
+            <td>
+                <a href="{% url 'remove_season_goal' goal.id %}" class="btn btn-primary btn-sm">Remove Goal</a>
+            </td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="5">
+                <i>
+                No goals for this user. 
+                <a href="{% url 'create_season_goal' user.id %}">Click here to add a goal.</a>
+                </i>
+            </td>
+        </tr>
+    {% endfor %}
+</table><br/><br/>
+
+<h3>Events:</h3>
+
+{% for event, event_results in results_by_event %}
+
+<h4>{{ event.name }}</h4>
+<canvas id="chart-{{event.id}}" width="100" height="20"></canvas>
+<script>
+var ctx = document.getElementById('chart-{{event.id}}').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [{% for result in event_results %}'{{ result.meet.description }}',{% endfor %}],
+        datasets: [{
+            label: 'Result',
+            data: [{% for result in event_results %}'{{ result.result }}',{% endfor %}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: false,
+                ticks: {
+                    callback: function(label, index, labels) {
+                        seconds = Number(label);
+                        return (new Date(seconds * 1000).toISOString().substr(14, 5));
+                    }
+                }
+            }
+        },
+        plugins: {
+            tooltip: { 
+                callbacks: {
+                    label: function(tooltipItem, data) {
+                        seconds = Number(tooltipItem.raw);
+                        return (new Date(seconds * 1000).toISOString().substr(14, 5));
+                    }
+                }
+            }
+        }
+    }
+});
+</script>
+
+    <table class="table table-grid">
+        <th>Season</th>
+        <th>Meet</th>
+        <th>Meet Date</th>
+        <th>Result</th>
+        <th>Method</th>
+        <th>Qualifications</th>
+        <th>Notes</th>
+        {% if request.user.is_superuser %}
+            <th></th>
+        {% endif %}
+    
+        {% for result in event_results reversed %}
+            <tr {% if result.personal_rank == 1 %}class="table-success"{% elif result.milestones %}class="table-info"{% endif %}>
+                <td>{{ result.meet.season.name }} </td>
+                <td>
+                    <a href="{% url 'meet' result.meet.id result.meet.description|slugify %}"> {{result.meet.description}}</a>
+                </td>
+                <td>{{ result.meet.date }}</td>
+                <td>
+                    {{result.formatted_result}}
+                </td>
+                <td>{{ result.method }}</td>
+                <td>{% for ql in result.qualifications.all %}{{ ql.description }}<br/>{% endfor %}
+                <td>{{ result.milestones|default:'' }}</td>
+                {% if request.user.is_superuser %}
+                    <td>
+                        <a href="{% url 'edit_result' result.id %}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                        <a href="{% url 'delete_result' result.id %}" class="btn btn-primary btn-sm"><i class="far fa-trash-alt"></i></a>
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </table>
+{% endfor %}
+
+
+{% endblock %}
+

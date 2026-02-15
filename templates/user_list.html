@@ -1,0 +1,39 @@
+{% extends 'layout.html' %}
+{% load track_tags %}
+
+{% block body %}
+
+<h3 class="mt-3">Track and Field Athletes</h3>
+
+Showing {{ users.start_index }} to {{ users.end_index }} of {{ users.paginator.count }} users.
+<table class="table table-striped">
+    <th>Last</th>
+    <th>First</th>
+    {% for user in users %}
+        <tr>
+            <td>
+                <a href="{% url 'profile' user.id %}"> {{user.last_name|clean_last_name:request}}</a>
+            </td>
+            <td>
+                <a href="{% url 'profile' user.id %}"> {{user.first_name}}</a>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        {% if users.has_previous %}
+            <li class="page-item"><a href="?page={{ users.previous_page_number }}">Previous</a></li>
+        {% endif %}
+        {% for page_num in users.paginator.page_range %}
+            <li class="page-item"><a class="page-link" href="?page={{page_num}}">{{ page_num }}</a></li>
+        {% endfor %}
+        {% if all_posts.has_next %}
+            <li class="page-item"><a href="?page={{ all_posts.next_page_number }}">Next</a></li>
+        {% endif %}
+    </ul>
+  </nav>
+
+{% endblock %}
+

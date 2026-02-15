@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+
+<h3 class="mt-3">Add Season Goal for {{user.get_full_name}}</h3>
+
+What's the Goal?: <br/>
+<form method="POST" class="form">
+    <button type="submit" class="btn btn-primary">Create Goal!</button>
+    {% csrf_token %}
+    {% crispy form %}
+</form>
+
+{% endblock %}

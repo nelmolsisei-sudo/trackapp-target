@@ -1,0 +1,30 @@
+{% extends 'layout.html' %}
+{% load track_tags %}
+
+{% block body %}
+
+<h3 class="mt-3">{{event.name}} Results</h3>
+
+{% if request.user.is_superuser %}
+    <a href="{% url 'merge_event' event.id %}" class="btn btn-primary">Merge Event</a>
+{% endif %}
+<table class="table table-striped">
+    <th>Athlete</th>
+    <th>Result</th>
+
+    {% for result in results %}
+        <tr>
+            <td>
+                <a href="{% url 'profile' result.athlete.id %}"> 
+                    {{result.athlete.first_name}} {{result.athlete.last_name|clean_last_name:request}}
+                </a>
+            </td>
+            <td>
+                {{ result.formatted_result }}
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
+
