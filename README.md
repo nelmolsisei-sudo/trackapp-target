@@ -2,7 +2,7 @@
 
 **A Django web application for track and field performance management, purpose-built as the target codebase for an RL evaluation environment.**
 
-Paired with [trackapp-rl-env](https://github.com/jackdeterman/trackapp-rl-env).
+Paired with [trackapp-rl-env](https://github.com/nelmolsisei-sudo/trackapp-rl-env).
 
 ---
 
