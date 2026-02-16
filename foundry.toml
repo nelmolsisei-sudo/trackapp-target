@@ -1,0 +1,7 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["/opt/foundry-libs"]
+
+[profile.default.fmt]
+line_length = 120
