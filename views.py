@@ -272,6 +272,7 @@ def add_result(request, user_id):
             form.save(commit=False)
             form.instance.athlete=user
             form.instance.save()
+            calculate_result_stats(user)
     else:
         form = ResultForm()
 
@@ -289,6 +290,8 @@ def edit_result(request, result_id):
     result = Result.objects.get(id=result_id)
     user = result.athlete
     results = Result.objects.filter(athlete=user)
+    events = Event.objects.all()
+    meets = Meet.objects.all()
 
     if request.method=="POST":
         form = ResultForm(request.POST, instance=result)
@@ -318,6 +321,7 @@ def delete_result(request, result_id):
         form = ResultForm(request.POST, instance=result)
         if form.is_valid():
             result.delete()
+        calculate_result_stats(user)
         return redirect("profile", user.id)
     else:
         form = ResultForm(instance=result)
