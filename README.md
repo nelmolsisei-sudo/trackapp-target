@@ -1,6 +1,6 @@
 # trackapp-target
 
-**A Django web application for track and field performance management, purpose-built as the target codebase for an RL evaluation environment.**
+**A multi-domain target codebase for RL evaluation -- Django web application + Solidity smart contracts -- purpose-built to test autonomous coding agents across the full stack.**
 
 Paired with [trackapp-rl-env](https://github.com/nelmolsisei-sudo/trackapp-rl-env).
 
@@ -47,6 +47,8 @@ This repository uses a **3-branch pattern** for each RL task. For every task def
 
 ### Current Task Branches
 
+**Django branches** (share history with `main`):
+
 ```
 main                              # Base application with infrastructure fixes
 
@@ -71,6 +73,16 @@ fix_remove_safety_golden          # POST-only enforcement on both views
 fix_remove_safety_test            # 4 tests for GET-safe/POST-active behavior
 ```
 
+**Solidity branches** (orphan -- completely separate file tree, no Django code):
+
+```
+smart_contract_erc20_baseline     # ERC-20 token with missing access control, validation gaps
+smart_contract_erc20_golden       # Secure implementation with require() guards
+smart_contract_erc20_test         # 11 Forge tests covering mint, transfer, transferFrom security
+```
+
+The Solidity branches use **orphan branches** -- they share no commit history with the Django branches and contain a pure Foundry project structure (`foundry.toml`, `src/`, `test/`). This keeps the file trees completely separate: when an agent checks out a smart contract baseline, it sees only the Solidity project, not the Django application.
+
 At build time, the RL environment clones this repository, generates diff patches between branches, and uses them for scenario setup and grading. The agent never sees the golden or test branches -- it works only with the baseline code and a natural language description of the problem.
 
 ## Why This Matters Beyond Track and Field
@@ -83,16 +95,25 @@ The bugs in this codebase are not academic. Missing stat recalculation after a r
 
 Training agents to fix these bugs -- autonomously, reliably, verifiably -- is a necessary step toward building AI systems that can be trusted with real software maintenance at scale.
 
+## Why Smart Contracts Belong in the Same Target Repo
+
+The addition of Solidity smart contract branches to this repository is deliberate. A single target repo that hosts both web2 (Django) and web3 (Solidity/EVM) tasks forces the RL evaluation framework to be genuinely framework-agnostic -- the same environment, the same grading infrastructure, the same 3-branch pattern must work across fundamentally different languages, runtimes, and testing frameworks.
+
+Smart contract security is arguably the highest-stakes application of autonomous coding. Contracts deployed to EVM-compatible chains like Ethereum and Monad are **immutable** -- there is no post-deployment hotfix. A missing `require` statement in an ERC-20 token can be exploited within seconds of deployment, and the funds are gone. The total value lost to smart contract vulnerabilities exceeds $5 billion. Every major exploit -- from the DAO hack to Wormhole to Ronin Bridge -- was caused by a vulnerability that a careful auditor would have caught, but that was missed under the time pressure and complexity of real development.
+
+Building agents that can reliably audit and fix these vulnerabilities requires RL environments that test against realistic contract implementations, not synthetic puzzles. The ERC-20 task in this repository presents the same categories of bugs that appear in production DeFi protocols: missing access control, insufficient balance validation, and absent zero-address guards. These are the foundational patterns that, when missed, have historically cost hundreds of millions of dollars.
+
 ## Roadmap
 
-The current task inventory focuses on view-level bugs in a single file. The planned expansion includes:
+The current task inventory spans Django view-level bugs and ERC-20 smart contract vulnerabilities. The planned expansion includes:
 
-- **Multi-file tasks**: bugs that span models, views, forms, and templates
+- **Smart contract expansion**: ERC-721 (NFT) implementations, DeFi protocol interactions (lending pools, AMMs), multi-contract upgrade patterns, gas optimization targeting Monad and other high-performance EVM chains
+- **Multi-file Django tasks**: bugs that span models, views, forms, and templates
 - **Logic tasks**: errors in `calculate_result_stats` and milestone computation that require understanding domain-specific math
 - **Architecture tasks**: URL routing issues, migration problems, settings misconfiguration
-- **Feature tasks**: implementing new functionality against existing patterns
+- **Web2/Web3 bridge tasks**: fixing backend services that interact with on-chain state (oracles, indexers, transaction relayers)
 
-The depth and breadth of this target codebase will grow in proportion to the complexity of the tasks it supports.
+The depth and breadth of this target codebase will grow in proportion to the complexity of the tasks it supports, across both traditional web applications and on-chain protocols.
 
 ## License
 
