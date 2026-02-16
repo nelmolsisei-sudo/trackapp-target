@@ -487,6 +487,9 @@ def add_coach(request, team_id):
 @login_required
 def remove_coach(request, coach_id, team_id):
 
+    if request.method != "POST":
+        return HttpResponse(status=405)
+
     coach = User.objects.get(id=coach_id)
     team = Team.objects.get(id=team_id)
     team.coaches.remove(coach)
@@ -512,6 +515,9 @@ def add_athlete_to_team(request, team_id):
 
 @login_required
 def remove_athlete_from_team(request, athlete_id, team_id):
+
+    if request.method != "POST":
+        return HttpResponse(status=405)
 
     athlete = User.objects.get(id=athlete_id)
     team = Team.objects.get(id=team_id)
