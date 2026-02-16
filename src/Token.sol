@@ -26,9 +26,11 @@ contract Token {
     }
 
     /**
-     * @notice Mint new tokens to an address.
+     * @notice Mint new tokens to an address. Only the contract owner may call this.
      */
     function mint(address to, uint256 amount) external {
+        require(msg.sender == owner, "Only owner can mint");
+        require(to != address(0), "Cannot mint to zero address");
         totalSupply += amount;
         balanceOf[to] += amount;
         emit Transfer(address(0), to, amount);
@@ -38,6 +40,8 @@ contract Token {
      * @notice Transfer tokens to another address.
      */
     function transfer(address to, uint256 amount) external returns (bool) {
+        require(to != address(0), "Cannot transfer to zero address");
+        require(balanceOf[msg.sender] >= amount, "Insufficient balance");
         balanceOf[msg.sender] -= amount;
         balanceOf[to] += amount;
         emit Transfer(msg.sender, to, amount);
@@ -57,6 +61,9 @@ contract Token {
      * @notice Transfer tokens from one address to another using an allowance.
      */
     function transferFrom(address from, address to, uint256 amount) external returns (bool) {
+        require(to != address(0), "Cannot transfer to zero address");
+        require(balanceOf[from] >= amount, "Insufficient balance");
+        require(allowance[from][msg.sender] >= amount, "Insufficient allowance");
         allowance[from][msg.sender] -= amount;
         balanceOf[from] -= amount;
         balanceOf[to] += amount;
