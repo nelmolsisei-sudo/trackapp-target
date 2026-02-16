@@ -100,6 +100,11 @@ def register(request):
                 "message": "Passwords must match."
             })
 
+        if len(password) < 8:
+            return render(request, "register.html", {
+                "message": "Password must be at least 8 characters."
+            })
+
         # Attempt to create new user
         try:
             user = User.objects.create_user(email, email, password)
