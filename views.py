@@ -135,7 +135,7 @@ def user_list(request):
 
 def profile(request, user_id):
 
-    user = User.objects.get(id=user_id)
+    user = get_object_or_404(User, id=user_id)
     results = Result.objects.filter(
         athlete=user
     ).order_by(
