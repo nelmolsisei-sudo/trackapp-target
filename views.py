@@ -415,6 +415,7 @@ def remove_season_goal(request, goal_id):
         "form":form
     })
 
+@login_required
 def merge_meet(request, meet_id):
 
     meet = Meet.objects.get(id=meet_id)
